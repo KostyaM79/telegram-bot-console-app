@@ -10,7 +10,7 @@ namespace TelegramBotConsoleApp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Все привет!");
+            Console.WriteLine("Всем привет!!!");
         }
     }
 }
