@@ -38,15 +38,19 @@ namespace TelegramBotConsoleApp
 
         private static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            if (update.Type == UpdateType.Message)
+            await Task.Run(() =>
             {
-                var message = update.Message;
-
-                if (message.Text[0] == '/')
+                if (update.Type == UpdateType.Message)
                 {
-                    CommandHandler(message);
+                    var message = update.Message;
+
+                    if (message.Text[0] == '/')
+                    {
+                        CommandHandler(message);
+                    }
                 }
             }
+            );
         }
 
         private static async Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
