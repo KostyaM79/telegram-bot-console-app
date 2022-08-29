@@ -49,8 +49,7 @@ namespace TelegramBotConsoleApp
                         CommandHandler(message);
                     }
                 }
-            }
-            );
+            });
         }
 
         private static async Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
@@ -64,6 +63,10 @@ namespace TelegramBotConsoleApp
             {
                 case "/start":
                     bot.SendTextMessageAsync(message.Chat.Id, "Начнём, пожалуй.");
+                    break;
+
+                case "/getFiles":
+                    bot.SendTextMessageAsync(message.Chat.Id, "Скро я смогу возвращать список файлов!")
                     break;
             }
         }
