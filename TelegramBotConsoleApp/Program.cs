@@ -71,7 +71,7 @@ namespace TelegramBotConsoleApp
 
 
                 case "/exit":
-                    bot.SendTextMessageAsync(message.Chat.Id, "Пока!");
+                    bot.SendTextMessageAsync(message.Chat.Id, "Пока!"); //Коммент
                     break;
             }
         }
