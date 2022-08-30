@@ -44,9 +44,15 @@ namespace TelegramBotConsoleApp
                 {
                     var message = update.Message;
 
-                    if (message.Text[0] == '/')
+                    switch(message.Type)
                     {
-                        CommandHandler(message);
+                        case MessageType.Text:
+                            TextMessageHandler(message);
+                            break;
+
+                        case MessageType.Document:
+                            SaveFile(message);
+                            break;
                     }
                 }
             });
@@ -54,9 +60,23 @@ namespace TelegramBotConsoleApp
 
         private static async Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
-
+            await Task.Run(() => { });
         }
 
+        /// <summary>
+        /// Обрабатывает текстовые сообщения
+        /// </summary>
+        /// <param name="message"></param>
+        private static void TextMessageHandler(Message message)
+        {
+            if (message.Text[0] == '/') CommandHandler(message);
+            else Console.WriteLine(message.Text);
+        }
+
+        /// <summary>
+        /// Обрабатывает команды пользователя
+        /// </summary>
+        /// <param name="message"></param>
         private static void CommandHandler(Message message)
         {
             switch (message.Text)
@@ -69,11 +89,30 @@ namespace TelegramBotConsoleApp
                     bot.SendTextMessageAsync(message.Chat.Id, "Скро я смогу возвращать список файлов!");
                     break;
 
-
                 case "/exit":
                     bot.SendTextMessageAsync(message.Chat.Id, "Пока!"); //Коммент
                     break;
             }
+        }
+
+        /// <summary>
+        /// Сохраняет полученные файлы
+        /// </summary>
+        /// <param name="message"></param>
+        private static async void SaveFile(Message message)
+        {
+            string directoryPath = System.IO.Directory.CreateDirectory($"files\\{message.Chat.Id}").FullName;   //Создаём папку и получаем её путь
+            string fileName = message.Document.FileName;                                                        //Получаем имя файла
+            string fileId = message.Document.FileId;                                                            //Получаем ID файла
+            long chatId = message.Chat.Id;                                                                      //Получаем ID пользователя
+
+            var file = await bot.GetFileAsync(fileId);
+            System.IO.FileStream fs = new System.IO.FileStream($"{directoryPath}\\{fileName}", System.IO.FileMode.Create);
+            await bot.DownloadFileAsync(file.FilePath, fs);
+            fs.Close();
+            fs.Dispose();
+
+            await bot.SendTextMessageAsync(chatId, "OK. Ваш файл успешно сохранён.\nЧтобы получить список ваших файлов введите команду - /get_files");
         }
     }
 }
