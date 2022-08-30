@@ -76,6 +76,8 @@ namespace TelegramBotConsoleApp
 =======
                 case "/exit":
                     bot.SendTextMessageAsync(message.Chat.Id, "Пока!");
+                    break;
+
                 case "/getFiles":
                     bot.SendTextMessageAsync(message.Chat.Id, "Скро я смогу возвращать список файлов!");
 >>>>>>> 93bc9fb8d67d82c4d158a85aab6be654d557d8c0
