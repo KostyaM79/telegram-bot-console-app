@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using System.IO;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
@@ -85,12 +86,12 @@ namespace TelegramBotConsoleApp
                     bot.SendTextMessageAsync(message.Chat.Id, "Начнём, пожалуй.");
                     break;
 
-                case "/getFiles":
-                    bot.SendTextMessageAsync(message.Chat.Id, "Скро я смогу возвращать список файлов!");
+                case "/get_files":
+                    SendFileList(message);
                     break;
 
                 case "/exit":
-                    bot.SendTextMessageAsync(message.Chat.Id, "Пока!"); //Коммент
+                    bot.SendTextMessageAsync(message.Chat.Id, "Пока!");
                     break;
             }
         }
@@ -113,6 +114,29 @@ namespace TelegramBotConsoleApp
             fs.Dispose();
 
             await bot.SendTextMessageAsync(chatId, "OK. Ваш файл успешно сохранён.\nЧтобы получить список ваших файлов введите команду - /get_files");
+        }
+
+        /// <summary>
+        /// Отправляет пользователю список файлов
+        /// </summary>
+        /// <param name="message"></param>
+        private static void SendFileList(Message message)
+        {
+            string path = $"files\\{message.Chat.Id}";
+            StringBuilder sb = new StringBuilder();
+
+            if (!Directory.Exists(path)) bot.SendTextMessageAsync(message.Chat.Id, "У вас пока нет сохранённых файлов.");
+            else
+            {
+                FileInfo[] files = Directory.CreateDirectory(path).GetFiles();
+                for (int i = 0; i < files.Length; i++)
+                {
+                    sb.Append($"{i + 1}. {files[i].Name}");
+                    if (i < files.Length - 1) sb.Append('\n');
+                }
+            }
+
+            bot.SendTextMessageAsync(message.Chat.Id, $"Список файлов:\n\n{sb.ToString()}");
         }
     }
 }
