@@ -64,14 +64,10 @@ namespace TelegramBotConsoleApp
                 case "/start":
                     bot.SendTextMessageAsync(message.Chat.Id, "Начнём, пожалуй.");
                     break;
-
-<<<<<<< HEAD
                 case "/exit":
                     bot.SendTextMessageAsync(message.Chat.Id, "Пока!");
-=======
                 case "/getFiles":
-                    bot.SendTextMessageAsync(message.Chat.Id, "Скро я смогу возвращать список файлов!")
->>>>>>> test-branch
+                    bot.SendTextMessageAsync(message.Chat.Id, "Скро я смогу возвращать список файлов!");
                     break;
             }
         }
