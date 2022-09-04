@@ -19,16 +19,21 @@ namespace TelegramBotConsoleApp
 {
     class Program
     {
-        static string yandexWeatherKey;
         static TelegramBotClient bot;
         static string token;
-        const string helpText = "/start - Начало работы с ботом\n/help - Список команд\n/get_files - Список файлов\n/load - Загрузить файл (после команды через пробел укажите имя файла)\n" +
+        const string helpText = "/start - Начало работы с ботом\n/help - " +            //Список команд
+            "Список команд\n/get_files - Список файлов\n/load - " +
+            "Загрузить файл (после команды через пробел укажите имя файла)\n" +
             "/update_weather - Обновляет сведения о погоде.";
+        static HttpClient client = new HttpClient();                                    //Создаём HTTP-клиент для взаимодействия с сервисом погоды Yandex
 
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             token = System.IO.File.ReadAllText("token.txt");                            //Получаем токен из файла
-            yandexWeatherKey = System.IO.File.ReadAllText("yandexWeatherKey.txt");      //Получаем ключ Yandex.Weather
+
+            client.DefaultRequestHeaders.Add("X-Yandex-API-Key",                        //Получаем ключ Yandex.Weather
+                System.IO.File.ReadAllText("yandexWeatherKey.txt"));
+
 
             bot = new TelegramBotClient(token);
             var cts = new CancellationTokenSource();
@@ -37,9 +42,14 @@ namespace TelegramBotConsoleApp
                 AllowedUpdates = Array.Empty<UpdateType>()
             };
 
-            bot.StartReceiving(updateHandler: HandleUpdateAsync, pollingErrorHandler: HandlePollingErrorAsync, receiverOptions: receiverOptions, cancellationToken: cts.Token);
-            var me = await bot.GetMeAsync();
-            Console.WriteLine($"Start listening for @{me.Username}");
+            bot.StartReceiving(
+                updateHandler: HandleUpdateAsync,
+                pollingErrorHandler: HandlePollingErrorAsync,
+                receiverOptions: receiverOptions,
+                cancellationToken: cts.Token
+                );
+
+            Console.WriteLine($"Телеграм-бот запущен.");
 
             Console.ReadKey();
             cts.Cancel();
@@ -337,10 +347,6 @@ namespace TelegramBotConsoleApp
         /// <returns></returns>
         private static async Task GetWeatherInfoAsync(long userId)
         {
-            //Создаём HTTP-клиент для взаимодействия с сервисом погоды Yandex
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("X-Yandex-API-Key", yandexWeatherKey);
-
             //Получаем сведения о погоде
             HttpResponseMessage mess = await client.GetAsync($"https://api.weather.yandex.ru/v2/forecast?lat=60.0663&lon=30.4154&extra=true");
             string responceText = mess.Content.ReadAsStringAsync().Result;
